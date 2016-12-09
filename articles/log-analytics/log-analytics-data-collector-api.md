@@ -7,7 +7,7 @@ author: bwren
 manager: jwhit
 editor: ''
 
-ms.assetid: a831fd90-3f55-423b-8b20-ccbaaac2ca75
+dms.assetid: a831fd90-3f55-423b-8b20-ccbaaac2ca75
 ms.service: log-analytics
 ms.workload: na
 ms.tgt_pltfrm: na
@@ -17,7 +17,7 @@ ms.date: 10/26/2016
 ms.author: bwren
 
 ---
-# Log Analytics HTTP Data Collector API
+d# Log Analytics HTTP Data Collector API
 When you use the Azure Log Analytics HTTP Data Collector API, you can add POST JavaScript Object Notation (JSON) data to the Log Analytics repository from any client that can call the REST API. By using this method, you can send data from third-party applications or from scripts, like from a runbook in Azure Automation.  
 
 ## Create a request
@@ -27,7 +27,7 @@ The next two tables list the attributes that are required for each request to th
 | Attribute | Property |
 |:--- |:--- |
 | Method |POST |
-| URI |https://\<CustomerId\>.ods.opinsights.azure.com/api/logs?api-version=2016-04-01 |
+da| URI |https://\<CustomerId\>.ods.opinsights.azure.com/api/logs?api-version=2016-04-01 |
 | Content type |application/json |
 
 ### Request URI parameters
@@ -37,7 +37,7 @@ The next two tables list the attributes that are required for each request to th
 | Resource |The API resource name: /api/logs. |
 | API Version |The version of the API to use with this request. Currently, it's 2016-04-01. |
 
-### Request headers
+da### Request headers
 | Header | Description |
 |:--- |:--- |
 | Authorization |The authorization signature. Later in the article, you can read about how to create an HMAC-SHA256 header. |
@@ -47,7 +47,7 @@ The next two tables list the attributes that are required for each request to th
 
 ## Authorization
 Any request to the Log Analytics HTTP Data Collector API must include an authorization header. To authenticate a request, you must sign the request with either the primary or the secondary key for the workspace that is making the request. Then, pass that signature as part of the request.   
-
+da
 Here's the format for the authorization header:
 
 ```
@@ -57,7 +57,7 @@ Authorization: SharedKey <WorkspaceID>:<Signature>
 *WorkspaceID* is the unique identifier for the Operations Management Suite workspace. *Signature* is a [Hash-based Message Authentication Code (HMAC)](https://msdn.microsoft.com/library/system.security.cryptography.hmacsha256.aspx) that is constructed from the request and then computed by using the [SHA256 algorithm](https://msdn.microsoft.com/library/system.security.cryptography.sha256.aspx). Then, you encode it by using Base64 encoding.
 
 Use this format to encode the **SharedKey** signature string:
-
+da
 ```
 StringToSign = VERB + "\n" +
                   Content-Length + "\n" +
@@ -67,7 +67,7 @@ StringToSign = VERB + "\n" +
 ```
 
 Here's an example of a signature string:
-
+da
 ```
 POST\n1024\napplication/json\nx-ms-date:Mon, 04 Apr 2016 08:00:00 GMT\n/api/logs
 ```
@@ -77,7 +77,7 @@ When you have the signature string, encode it by using the HMAC-SHA256 algorithm
 ```
 Signature=Base64(HMAC-SHA256(UTF8(StringToSign)))
 ```
-
+da
 The samples in the next sections have sample code to help you create an authorization header.
 
 ## Request body
@@ -87,7 +87,7 @@ The body of the message must be in JSON. It must include one or more records wit
 {
 "property1": "value1",
 " property 2": "value2"
-" property 3": "value3",
+da" property 3": "value3",
 " property 4": "value4"
 }
 ```
@@ -97,7 +97,7 @@ You can batch multiple records together in a single request by using the followi
 ```
 {
 "property1": "value1",
-" property 2": "value2"
+d" property 2": "value2"
 " property 3": "value3",
 " property 4": "value4"
 },
@@ -107,7 +107,7 @@ You can batch multiple records together in a single request by using the followi
 " property 3": "value3",
 " property 4": "value4"
 }
-```
+da```
 
 ## Record type and properties
 You define a custom record type when you submit data through the Log Analytics HTTP Data Collector API. Currently, you can't write data to existing record types that were created by other data types and solutions. Log Analytics reads the incoming data and then creates properties that match the data types of the values that you enter.
@@ -117,7 +117,7 @@ Each request to the Log Analytics API must include a **Log-Type** header with th
 To identify a property's data type, Log Analytics adds a suffix to the property name. If a property contains a null value, the property is not included in that record. This table lists the property data type and corresponding suffix:
 
 | Property data type | Suffix |
-|:--- |:--- |
+a|:--- |:--- |
 | String |_s |
 | Boolean |_b |
 | Double |_d |
@@ -136,10 +136,9 @@ For example, this submission entry would create a record with three properties, 
 If you then submitted this next entry, with all values formatted as strings, the properties would not change. These values can be converted to existing data types:
 
 ![Sample record 2](media/log-analytics-data-collector-api/record-02.png)
-
 But, if you then made this next submission, Log Analytics would create the new properties **boolean_d** and **string_d**. These values can't be converted:
 
-![Sample record 3](media/log-analytics-data-collector-api/record-03.png)
+![Sample record 3](media/log-danalytics-data-collector-api/record-03.png)
 
 If you then submitted the following entry, before the record type was created, Log Analytics would create a record with three properties, **number_s**, **boolean_s**, and **string_s**. In this entry, each of the initial values is formatted as a string:
 
@@ -153,13 +152,13 @@ There are some constraints around the data posted to the Log Analytics Data coll
 * Recommended maximum number of fields for a given type is 50. This is a practical limit from a usability and search experience perspective.  
 
 ## Return codes
-The HTTP status code 202 means that the request has been accepted for processing, but processing has not yet finished. This indicates that the operation completed successfully.
+The HTTP status code 200 means that the request has been accepted for processing. This indicates that the operation completed successfully.
 
 This table lists the complete set of status codes that the service might return:
 
 | Code | Status | Error code | Description |
 |:--- |:--- |:--- |:--- |
-| 202 |Accepted | |The request was successfully accepted. |
+| 200 |OK | |The request was successfully accepted. |
 | 400 |Bad request |InactiveCustomer |The workspace has been closed. |
 | 400 |Bad request |InvalidApiVersion |The API version that you specified was not recognized by the service. |
 | 400 |Bad request |InvalidCustomerId |The workspace ID specified is invalid. |
@@ -413,7 +412,7 @@ def post_data(customer_id, shared_key, body, log_type):
     }
 
     response = requests.post(uri,data=body, headers=headers)
-    if (response.status_code == 202):
+    if (response.status_code == 200):
         print 'Accepted'
     else:
         print "Response code: {}".format(response.status_code)
